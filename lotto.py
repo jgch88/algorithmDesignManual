@@ -7,4 +7,14 @@ class Lotto:
         self._k = k
         self._j = j
         self._l = l
+        self._set = self._generateNumbers();
 
+    def numbers(self):
+        return self._set
+
+    def _generateNumbers(self):
+        s = set()
+        for i in range(1, self._n + 1):
+            s.add(i)
+        return s
+        

@@ -1,4 +1,5 @@
 from itertools import combinations
+from random import randint
 
 class Lotto:
     """
@@ -44,17 +45,20 @@ class Lotto:
                 h[i] = True
         for key,value in h.items():
             if (value == False):
-                print(key, value)
+                # print(key, value)
                 return False
         return True
 
     def generate_minimum_tickets_needed(self):
         # use a randomised algorithm to generate tickets, and find the minimum using statistical confidence
         # while !self.possibilities_fully_covered
-        ticket1 = frozenset([1,2,3])
-        ticket2 = frozenset([1,4,5])
-        s = set([ticket1, ticket2])
-        return s
+        #   randomly generate a ticket and add it to the list
+        tickets = set()
+        while not (self.possibilities_fully_covered(tickets)):
+            possibilities = list(combinations(self._set, self._k))
+            random_possibility = frozenset(possibilities[randint(0, len(possibilities) - 1)])
+            tickets.add(random_possibility)
+        return tickets
 
     def _generate_covered_possibilities(self, ticket):
         # each ticket, e.g. {1,2,4} covers {1,2,*}, {1,4,*}, {2,4,*}
@@ -74,7 +78,7 @@ class Lotto:
             # to flag every lottery draw possibility covered by this ticket.
             # i.e. generate all the *s in {10,13,14,*,*,*}
             remaining_combinations = combinations(remaining_numbers, self._k - self._l)
-            print('pwc', pwc, 'ticket', ticket)
+            # print('pwc', pwc, 'ticket', ticket)
 
             # generate all permutations using this pwc
             # for combination in remaining_combinations
@@ -83,7 +87,7 @@ class Lotto:
                 s2 = set(combination)
                 # union a remaining combination until no remaining combinations are left
                 fs = s.union(s2)
-                print(fs)
+                # print(fs)
                 # add permutations to covered set
                 covered.add(frozenset(fs))
         return covered

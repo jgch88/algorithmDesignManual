@@ -23,72 +23,64 @@ class Lotto:
 
     def possible_winning_number_combinations(self):
         s = set()
-        for i in combinations(self._set, self._j):
-            # frozenset so that it is hashable and can be placed in a set
-            # set allows equality of elements without order, unlike tuples
-            s.add(frozenset(i))
+        # psychic promises at least j items are correct within n:
+        # generate all possible winning combinations (n choose j).
+        for combination in combinations(self._set, self._j):
+            # use frozenset because it is hashable and can be placed in a set.
+            # use set/frozenset because we care about set equality 
+            # not tuple equality.
+            # also, we can use a frozenset as a dictionary key.
+            s.add(frozenset(combination))
         return s
 
     def possibilities_fully_covered(self, ticket_set):
-        # generate hashmap of all possible winning combinations, setting each 
-        # combination as False (means this possibility is uncovered)
-        h = {}
-        for c in self.possible_winning_number_combinations():
-            h[c] = False
+        # after generating hashmap of all possible winning combinations (pwc), 
+        # set each possible winning combination as False 
+        # (False means this pwc is not 'covered' by any ticket)
+        pwc_covered = {}
+        for combination in self.possible_winning_number_combinations():
+            pwc_covered[combination] = False
 
-        # for each ticket
-        # generate covered possibilities (k choose l)
+        # for each ticket in set of tickets presented to us
         for ticket in ticket_set:
-            covered = self._generate_covered_possibilities(ticket)
+            # generate all pwcs covered by this ticket
+            covered_pwcs = self._generate_covered_pwcs(ticket)
             # mark each covered possibility in hashmap as True
-            for i in covered:
-                h[i] = True
-        for key,value in h.items():
+            for i in covered_pwcs:
+                pwc_covered[i] = True
+
+        # loop through to check if any of the pwcs is not covered
+        for key,value in pwc_covered.items():
             if (value == False):
-                # print(key, value)
                 return False
         return True
 
+
+    # assume l items within ticket's k slots is a winning combination
+    def _generate_covered_pwcs(self, ticket):
+        covered_pwcs = set()
+        # each ticket has k slots, but only l are needed to 'win'
+        # generate all winning combinations involving l items (k choose l)
+        for l_combination in combinations(ticket, self._l):
+            # within each l_combination, the remaining slots (k - l) can be filled
+            # with any unused number and that is still a valid pwc
+            pwc = frozenset(l_combination) # for set difference
+            # remove pwc from n
+            unused_numbers = self._set - pwc
+            remaining_combinations = combinations(unused_numbers, self._k - self._l)
+            # generate all winning pwc for this combination of l
+            # by combining l combination with every remaining combinations
+            for remaining_combination in remaining_combinations:
+                s = set(l_combination).union(set(remaining_combination))
+                covered_pwcs.add(frozenset(s))
+        return covered_pwcs
+
     def generate_minimum_tickets_needed(self):
-        # use a randomised algorithm to generate tickets, and find the minimum using statistical confidence
-        # while !self.possibilities_fully_covered
-        #   randomly generate a ticket and add it to the list
+        # use a randomised algorithm (suggested by book) to generate tickets 
+        # until all possible winnning combinations are covered
         tickets = set()
+        possibilities = list(combinations(self._set, self._k))
         while not (self.possibilities_fully_covered(tickets)):
-            possibilities = list(combinations(self._set, self._k))
             random_possibility = frozenset(possibilities[randint(0, len(possibilities) - 1)])
             tickets.add(random_possibility)
         return tickets
-
-    def _generate_covered_possibilities(self, ticket):
-        # each ticket, e.g. {1,2,4} covers {1,2,*}, {1,4,*}, {2,4,*}
-        # or (k choose l) * ((n - l) choose (k - l)) possibilities
-        # e.g. {1,2,*} covers {1,2,3}, {1,2,4}, {1,2,5}
-        # {1,4,*} covers {1,4,2} (same as {1,2,4} above), {1,4,3}, {1,4,5}
-        # (2,4,*} covers {2,4,1} (overlap), {2,4,3}, {2,4,5}
-        covered = set()
-        for possible_winning_combination in combinations(ticket, self._l):
-            pwc = frozenset(possible_winning_combination)
-            # remove pwc from n
-            remaining_numbers = self._set - pwc
-            # in the simple example, there's only 3 remaining numbers because
-            # there's only one slot left.
-            # in the second test case, there are 12 remaining numbers
-            # but we can't just append to the pwc set, because there will only be 4 numbers out of k=6 slots. we need to union all possible 12 choose 3 combinations
-            # to flag every lottery draw possibility covered by this ticket.
-            # i.e. generate all the *s in {10,13,14,*,*,*}
-            remaining_combinations = combinations(remaining_numbers, self._k - self._l)
-            # print('pwc', pwc, 'ticket', ticket)
-
-            # generate all permutations using this pwc
-            # for combination in remaining_combinations
-            for combination in remaining_combinations:
-                s = set(possible_winning_combination)
-                s2 = set(combination)
-                # union a remaining combination until no remaining combinations are left
-                fs = s.union(s2)
-                # print(fs)
-                # add permutations to covered set
-                covered.add(frozenset(fs))
-        return covered
-

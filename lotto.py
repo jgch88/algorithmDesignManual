@@ -6,8 +6,8 @@ class Lotto:
     """
     def __init__(self, n=15, k=6, j=4, l=3):
         self._n = n
-        self._k = k
-        self._j = j
+        self._k = k # slots on ticket
+        self._j = j # number of psychically-promised correct numbers in n
         self._l = l
         self._set = self._generate_numbers();
 
@@ -22,7 +22,7 @@ class Lotto:
 
     def possible_winning_number_combinations(self):
         s = set()
-        for i in combinations(self._set, self._k):
+        for i in combinations(self._set, self._j):
             # frozenset so that it is hashable and can be placed in a set
             # set allows equality of elements without order, unlike tuples
             s.add(frozenset(i))
@@ -44,6 +44,7 @@ class Lotto:
                 h[i] = True
         for key,value in h.items():
             if (value == False):
+                print(key, value)
                 return False
         return True
 
@@ -58,12 +59,24 @@ class Lotto:
             pwc = frozenset(possible_winning_combination)
             # remove pwc from n
             remaining_numbers = self._set - pwc
+            # in the simple example, there's only 3 remaining numbers because
+            # there's only one slot left.
+            # in the second test case, there are 12 remaining numbers
+            # but we can't just append to the pwc set, because there will only be 4 numbers out of k=6 slots. we need to union all possible 12 choose 3 combinations
+            # to flag every lottery draw possibility covered by this ticket.
+            # i.e. generate all the *s in {10,13,14,*,*,*}
+            remaining_combinations = combinations(remaining_numbers, self._k - self._l)
+            print('pwc', pwc, 'ticket', ticket)
 
-            # generate permutations using this pwc
-            for n in remaining_numbers:
-                s = list(possible_winning_combination)
-                s.append(n)
+            # generate all permutations using this pwc
+            # for combination in remaining_combinations
+            for combination in remaining_combinations:
+                s = set(possible_winning_combination)
+                s2 = set(combination)
+                # union a remaining combination until no remaining combinations are left
+                fs = s.union(s2)
+                print(fs)
                 # add permutations to covered set
-                covered.add(frozenset(s))
+                covered.add(frozenset(fs))
         return covered
 

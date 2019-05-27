@@ -35,3 +35,12 @@ class TestLotto(unittest.TestCase):
         ticket2 = frozenset([1,4,5])
         self.assertEqual(l.possibilities_fully_covered(set([ticket1, ticket2])), True)
 
+        # test case 2
+        l2 = Lotto(n=15, k=6, j=6, l=3)
+        ticket1 = frozenset([2,4,8,10,13,14])
+        ticket2 = frozenset([4,5,7,8,12,15])
+        ticket3 = frozenset([1,2,3,6,11,13])
+        ticket4 = frozenset([3,5,6,9,10,15])
+        ticket5 = frozenset([1,7,9,11,12,14])
+        self.assertEqual(l2.possibilities_fully_covered(set([ticket1, ticket2, ticket3, ticket4, ticket5])), True)
+

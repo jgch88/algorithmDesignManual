@@ -29,3 +29,9 @@ class TestLotto(unittest.TestCase):
         self.assertEqual(l.possible_winning_number_combinations(), 
             set([c1,c2,c3,c4,c5,c6,c7,c8,c9,c10]))
 
+    def test_given_set_of_tickets_establishes_sufficient_coverage(self):
+        l = Lotto(n=5, k=3, j=3, l=2)
+        ticket1 = frozenset([1,2,3])
+        ticket2 = frozenset([1,4,5])
+        self.assertEqual(l.possibilities_fully_covered(set([ticket1, ticket2])), True)
+

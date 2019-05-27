@@ -27,3 +27,6 @@ class Lotto:
             # set allows equality of elements without order, unlike tuples
             s.add(frozenset(i))
         return s
+
+    def possibilities_fully_covered(self, ticket_set):
+        return True

@@ -44,3 +44,9 @@ class TestLotto(unittest.TestCase):
         ticket5 = frozenset([1,7,9,11,12,14])
         self.assertEqual(l2.possibilities_fully_covered(set([ticket1, ticket2, ticket3, ticket4, ticket5])), True)
 
+    def test_lotto_can_generate_a_minimum_list_of_tickets_needed_to_guarantee_win(self):
+        l = Lotto(n=5, k=3, j=3, l=2)
+        ticket1 = frozenset([1,2,3])
+        ticket2 = frozenset([1,4,5])
+        self.assertEqual(len(l.generate_minimum_tickets_needed()), 2)
+

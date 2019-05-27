@@ -48,6 +48,14 @@ class Lotto:
                 return False
         return True
 
+    def generate_minimum_tickets_needed(self):
+        # use a randomised algorithm to generate tickets, and find the minimum using statistical confidence
+        # while !self.possibilities_fully_covered
+        ticket1 = frozenset([1,2,3])
+        ticket2 = frozenset([1,4,5])
+        s = set([ticket1, ticket2])
+        return s
+
     def _generate_covered_possibilities(self, ticket):
         # each ticket, e.g. {1,2,4} covers {1,2,*}, {1,4,*}, {2,4,*}
         # or (k choose l) * ((n - l) choose (k - l)) possibilities

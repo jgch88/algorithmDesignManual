@@ -21,13 +21,16 @@ class BSTNode:
     def search(self, value):
         current_node = self
         while current_node is not None:
-            if value == current_node.value: # wasted a lot of time putting it below
+            if value == current_node.value: # wasted a lot of time putting it below, be careful about using triple ifs
                 return current_node
-            if value > current_node.value:
+            elif value > current_node.value:
                 current_node = current_node.right
-            if value < current_node.value:
+            else:
                 current_node = current_node.left
         return None
+
+    def contains(self, value):
+        return self.search(value) is not None
 
     def search_parent(self, value):
         current_node = self

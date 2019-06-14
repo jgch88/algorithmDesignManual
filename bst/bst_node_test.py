@@ -60,6 +60,12 @@ class TestBSTNode(unittest.TestCase):
         self.assertEqual(root.right.left.value, 5)
         self.assertEqual(root.right.left.right.value, 6)
 
+    def test_can_query_if_bst_contains_value(self):
+        bst_node = BSTNode(1)
+        self.assertEqual(bst_node.contains(5), False)
+        bst_node.add(3)
+        bst_node.add(5)
+        self.assertEqual(bst_node.contains(5), True)
 
     def setup_tree(self):
         # Skiena's Algorithm design manual P81
